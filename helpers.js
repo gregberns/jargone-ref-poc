@@ -2,6 +2,8 @@ const fetch = require('node-fetch')
 const R = require('ramda')
 const Task = require('data.task')
 // const mailer = require('nodemailer');
+var sendgridMailer = require('sendgrid').mail;
+const sendgrid = require('sendgrid');
 
 const main = (reqBody, onError, onSuccess) => {
   const {applicant, references, positionTitle} = validateBody(reqBody)
@@ -188,50 +190,29 @@ const sendEmails = emails =>
   R.traverse(Task.of, sendEmail, emails)
 
 const sendEmail = mail => {
-  // var smtpTransport = mailer.createTransport({
-  //   // service: "Gmail",
-  //   // auth: {
-  //   //     user: "gmail_id@gmail.com",
-  //   //     pass: "gmail_password"
-  //   // }
-  //   service: 'Gmail',
-  //   auth: {
-  //     type: 'OAuth2',
-  //     user: 'gregberns@gmail.com',
-  //     clientId: 'clientid',
-  //     clientSecret: 'clientsecret',
-  //     refreshToken: 'refreshtoken',
-  //     accessToken: 'accesstoken',
-  //     expires: 12345
-  //   },
-  // });
-
   return new Task(function(reject, resolve) {
-    resolve(`Email sent. Payload: ${JSON.stringify(mail)}`)
-    // smtpTransport.sendMail(mail, function(error, response) {
-    //   if (error)  reject(error)
-    //   else        resolve(response)
-    // });
+    const sg = sendgrid(process.env.SENDGRID_API_KEY);
+    const request = sg.emptyRequest({
+      method: 'POST',
+      path: '/v3/mail/send',
+      body: new sendgridMailer.Mail(
+          new sendgridMailer.Email(mail.from),
+          mail.subject,
+          new sendgridMailer.Email(mail.to),
+          new sendgridMailer.Content('text/plain', mail.text)
+        ).toJSON(),
+    });
+
+    sg.API(request, function(error, response) {
+      if (error)  reject(error)
+      else        resolve(response)
+
+      // console.log(response.statusCode);
+      // console.log(response.body);
+      // console.log(response.headers);
+    });
   })
 }
-
-// smtpTransport.sendMail(mail, function(error, response){
-//     if(error){
-//         console.log(error);
-//     }else{
-//         console.log("Message sent: " + response.message);
-//     }
-//     smtpTransport.close();
-// });
-
-// var mail = {
-//     from: "Yashwant Chavan <from@gmail.com>",
-//     to: "to@gmail.com",
-//     subject: "Send Email Using Node.js",
-//     text: "Node.js New world for me",
-//     html: "<b>Node.js New world for me</b>"
-// }
-
 
 module.exports = {
   main,

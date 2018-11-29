@@ -10,3 +10,5 @@ cd jargone-ref-poc/src
 npm install
 npm start
 ```
+
+heroku addons:create sendgrid:starter
