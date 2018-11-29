@@ -29,7 +29,7 @@ app.post('/submit', function(req, res){
   console.log('/submit called', req.body)
   helper.main(
     req.body
-  , err => { throw new err }
+  , err  => res.sendStatus(500).json({ error: err })
   , data => res.send(data)
   )
 });

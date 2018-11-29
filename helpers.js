@@ -33,18 +33,20 @@ const testPayload = {
   positionTitle: 'Server',
   applicant: {
     name: 'Jane Applicant',
-    email: 'janea@gmail.com',
+    email: 'gregberns@gmail.com',
   },
   references: [{
     name: 'Jon Doe',
     title: 'Manager',
     relationship: 'Manager',
-    email: 'jondoe@gmail.com',
+    email: 'gregberns+1@gmail.com',
   }]
 };
 
 const sendTest = () => {
-  return fetch('http://localhost:3000/submit', {
+  //var url = 'http://localhost:3000/submit';
+  var url = 'https://jargone-ref-poc.herokuapp.com/submit'
+  return fetch(url, {
       method: 'post',
       headers: {
         'Accept': 'application/json',
@@ -52,7 +54,7 @@ const sendTest = () => {
       },
       body: JSON.stringify(testPayload)
     })
-    .then(res => res.json())
+    //.then(res => res.json())
     .then(res => {
       console.log('Response: ', res);
       return res;
@@ -204,12 +206,11 @@ const sendEmail = mail => {
     });
 
     sg.API(request, function(error, response) {
+      console.log(response.statusCode);
+      console.log(response.body);
+      console.log(response.headers);
       if (error)  reject(error)
       else        resolve(response)
-
-      // console.log(response.statusCode);
-      // console.log(response.body);
-      // console.log(response.headers);
     });
   })
 }
