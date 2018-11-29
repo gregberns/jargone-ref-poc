@@ -207,7 +207,7 @@ const sendEmail = mail => {
   // });
 
   return new Task(function(reject, resolve) {
-    resolve(`Email sent to: ${mail.to}`)
+    resolve(`Email sent. Payload: ${JSON.stringify(mail)}`)
     // smtpTransport.sendMail(mail, function(error, response) {
     //   if (error)  reject(error)
     //   else        resolve(response)
